@@ -63,7 +63,7 @@ Point map_point_to_screen_space(Point p, Screen s)
         p_mapped.x = interpolate_point_between_lines_a(p, l_x_lower, l_x_upper, l_hrzn);
         p_mapped.y = interpolate_point_between_lines_b(p, l_y_lower, l_y_upper, l_hrzn);
     }
-    // Bot sets of lines are NOT parallel
+    // Both sets of lines are NOT parallel
     else
     {
         // Find horizon
@@ -79,6 +79,12 @@ Point map_point_to_screen_space(Point p, Screen s)
     return p_mapped;
 }
 
+// Helper for helper function interpolate_point_between_lines_a().
+double lerp_p_tween_ls_a_helper(Line l1, Line l2)
+{
+    return (l1.dx * l2.dx + l1.dy * l2.dy) / (l1.dx * l2.dy - l1.dy * l2.dx);
+}
+
 // Helper for a point between non-parallel lines.
 double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Line l_hrzn)
 {
@@ -87,24 +93,13 @@ double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Li
     if (!point_is_on_line(p_hrzn, l_hrzn, 0.000001))
         return NAN;
 
-    // Find angles of lines
-    double a_hrzn = angle_of_line(l_hrzn);
-    double a_lower = angle_of_line(l_lower);
-    double a_upper = angle_of_line(l_upper);
-    double da_lower = fposmod(a_lower - a_hrzn, PI);
-    double da_upper = fposmod(a_upper - a_hrzn, PI);
-
-    // Calculate constants for magic formula
-    double k = 1 / (cot(da_upper) - cot(da_lower));
-    double h = -cot(da_lower) * k;
-
-    // Get the line and it's corresponding angle for the point
+    // Get the line for the point
     Line l_p = line_from_points(p, p_hrzn);
-    double a_p = angle_of_line(l_p);
-    double da_p = fposmod(a_p - a_hrzn, PI);
 
     // Use magic formula to calculate final interpolated value
-    return k * cot(da_p) + h;
+    double k = 1 / (lerp_p_tween_ls_a_helper(l_upper, l_hrzn) - lerp_p_tween_ls_a_helper(l_lower, l_hrzn));
+    double h = -lerp_p_tween_ls_a_helper(l_lower, l_hrzn) * k;
+    return k * lerp_p_tween_ls_a_helper(l_p, l_hrzn) + h;
 }
 
 // Helper for a point between parallel lines, with non-parallel lines on other sides.
@@ -115,11 +110,9 @@ double interpolate_point_between_lines_b(Point p, Line l_lower, Line l_upper, Li
     double d_upper = distance_between_point_and_line(l_upper.p, l_hrzn);
     double d_point = distance_between_point_and_line(p, l_hrzn);
 
-    // Calculate constants for magic formula
+    // Use magic formula to calculate final interpolated value
     double k = (d_upper * d_lower) / (d_upper - d_lower);
     double h = 1 / d_lower;
-
-    // Use magic formula to calculate final interpolated value
     return k * (-(1 / d_point) + h);
 }
 

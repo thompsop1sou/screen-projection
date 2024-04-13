@@ -24,6 +24,8 @@ bool screen_is_valid(Screen s);
 
 Point map_point_to_screen_space(Point p, Screen s);
 
+double lerp_p_tween_ls_a_helper(Line l1, Line l2);
+
 double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Line h);
 
 double interpolate_point_between_lines_b(Point p, Line l_lower, Line l_upper, Line h);

@@ -10,7 +10,7 @@ void print_double(double x)
 
 bool doubles_are_equal(double x1, double x2, double epsilon)
 {
-    return abs(x1 - x2) <= epsilon;
+    return fabs(x1 - x2) <= epsilon;
 }
 
 double degrees_to_radians(double a)
