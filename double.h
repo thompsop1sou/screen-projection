@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef DOUBLE_H
+#define DOUBLE_H
 
 #include <stdio.h>
 #include <math.h>

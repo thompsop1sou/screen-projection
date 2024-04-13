@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "double.h"
 #include "point.h"
 #include "line.h"
 #include "screen.h"
@@ -100,6 +101,6 @@ void test_screen(Screen s, Point ps[], int ps_size)
         printf(" -> ");
         print_point(map_point_to_screen_space(ps[i], s));
     }
-    
+
     printf("\n");
 }

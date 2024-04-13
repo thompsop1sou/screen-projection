@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-#include "utils.h"
+#include "double.h"
 
 typedef struct point Point;
 

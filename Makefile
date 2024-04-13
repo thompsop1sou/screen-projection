@@ -2,7 +2,7 @@ run: main
 	./main
 
 main: screen
-	gcc -o main main.c screen.o line.o point.o utils.o -lm
+	gcc -o main main.c screen.o line.o point.o double.o -lm
 
 screen: line
 	gcc -c screen.c
@@ -10,11 +10,11 @@ screen: line
 line: point
 	gcc -c line.c
 
-point: utils
+point: double
 	gcc -c point.c
 
-utils:
-	gcc -c utils.c
+double:
+	gcc -c double.c
 
 clean:
 	rm -f *.o
