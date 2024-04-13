@@ -19,4 +19,10 @@ double radians_to_degrees(double a);
 
 double fposmod(double x, double y);
 
+double csc(double a);
+
+double sec(double a);
+
+double cot(double a);
+
 #endif

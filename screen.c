@@ -95,8 +95,8 @@ double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Li
     double da_upper = fposmod(a_upper - a_hrzn, PI);
 
     // Calculate constants for magic formula
-    double k = 1 / (tan(da_upper - PI / 2.0) - tan(da_lower - PI / 2.0));
-    double h = -tan(da_lower - PI / 2.0) * k;
+    double k = 1 / (cot(da_upper) - cot(da_lower));
+    double h = -cot(da_lower) * k;
 
     // Get the line and it's corresponding angle for the point
     Line l_p = line_from_points(p, p_hrzn);
@@ -104,7 +104,7 @@ double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Li
     double da_p = fposmod(a_p - a_hrzn, PI);
 
     // Use magic formula to calculate final interpolated value
-    return k * tan(da_p - PI / 2.0) + h;
+    return k * cot(da_p) + h;
 }
 
 // Helper for a point between parallel lines, with non-parallel lines on other sides.

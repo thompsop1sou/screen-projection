@@ -28,3 +28,22 @@ double fposmod(double x, double y)
     double z = fmod(x, y);
     return (z >= 0 ? z : z + y);
 }
+
+double csc(double a)
+{
+    return 1.0 / sin(a);
+}
+
+double sec(double a)
+{
+    return 1.0 / cos(a);
+}
+
+double cot(double a)
+{
+    double x = tan(a);
+    if (isinf(x))
+        return 0.0;
+    else
+        return 1.0 / x;
+}
