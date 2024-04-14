@@ -24,12 +24,14 @@ bool screen_is_valid(Screen s);
 
 Point map_point_to_screen_space(Point p, Screen s);
 
-double lerp_p_tween_ls_a_helper(Line l1, Line l2);
+double non_parallel_helper(Line l1, Line l2);
 
-double interpolate_point_between_lines_a(Point p, Line l_lower, Line l_upper, Line h);
+double map_point_coord_non_parallel_lines(Point p, Line l_lower, Line l_upper, Line h);
 
-double interpolate_point_between_lines_b(Point p, Line l_lower, Line l_upper, Line h);
+double map_point_coord_both_types_of_lines(Point p, Line l_lower, Line l_upper, Line h);
 
-double interpolate_point_between_lines_c(Point p, Line l_lower, Line l_upper);
+double map_point_coord_parallel_lines(Point p, Line l_lower, Line l_upper);
+
+void test_screen_mapping(unsigned int num_screens);
 
 #endif

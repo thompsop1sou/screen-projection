@@ -17,9 +17,13 @@ struct point
 
 void print_point(Point p);
 
+Point random_point(double x_min, double x_max, double y_min, double y_max);
+
 bool point_is_valid(Point p);
 
 bool points_are_equal(Point p1, Point p2, double epsilon);
+
+bool point_is_between_points(Point p0, Point p1, Point p2, double epsilon);
 
 double distance_between_points(Point p1, Point p2);
 

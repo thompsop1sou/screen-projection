@@ -5,6 +5,7 @@
 #include "line.h"
 #include "screen.h"
 
+void test_random_screens();
 void test_points_and_lines();
 void test_screens();
 void test_screen(Screen s, Point ps[], int ps_size);
@@ -12,7 +13,7 @@ void test_screen(Screen s, Point ps[], int ps_size);
 int main()
 {
     //test_points_and_lines();
-    test_screens();
+    //test_screens();
     return 0;
 }
 

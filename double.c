@@ -8,6 +8,13 @@ void print_double(double x)
         printf("%.3g", x);
 }
 
+double random_double(double min, double max)
+{
+    double rand_max = (double)RAND_MAX;
+    double x = (double)rand() + (double)rand() / (rand_max + 1.0);
+    return x * (max - min) / rand_max + min;
+}
+
 bool doubles_are_equal(double x1, double x2, double epsilon)
 {
     return fabs(x1 - x2) <= epsilon;
