@@ -1,5 +1,6 @@
 #include "screen.h"
 
+// Prints the four corners of a screen.
 void print_screen(Screen s)
 {
     printf("[");
@@ -13,6 +14,7 @@ void print_screen(Screen s)
     printf("]");
 }
 
+// Returns whether a screen is a valid convex quadrilateral.
 bool screen_is_valid(Screen s)
 {
     // Get diagonal lines
@@ -20,7 +22,7 @@ bool screen_is_valid(Screen s)
     Line l_diagonal_2 = line_from_points(s.p10, s.p01);
 
     // Find the intersection of the diagonal lines
-    Point p_intersect = find_intersection_of_lines(l_diagonal_1, l_diagonal_2);
+    Point p_intersect = intersection_of_lines(l_diagonal_1, l_diagonal_2);
 
     // Ensure the intersection point is between p00 and p11
     bool p_is_between_diagonal_1 = point_is_between_points(p_intersect, s.p00, s.p11, 0.000001);
@@ -32,7 +34,8 @@ bool screen_is_valid(Screen s)
     return p_is_between_diagonal_1 && p_is_between_diagonal_2;
 }
 
-// Point p is in wiimote coordinates. Will be mapped to screen-space coordinates and returned.
+// Maps the point p using a projection mapping. The mapping is based on the screen s in
+// that it will map the four corners of the screen to (0, 0), (1, 0), (0, 1), and (1, 1).
 Point map_point_to_screen_space(Point p, Screen s)
 {
     // Set up point to return
@@ -59,7 +62,7 @@ Point map_point_to_screen_space(Point p, Screen s)
     else if (l_x_are_parallel)
     {
         // Find horizon
-        Point p_hrzn_y = find_intersection_of_lines(l_y_lower, l_y_upper);
+        Point p_hrzn_y = intersection_of_lines(l_y_lower, l_y_upper);
         Line l_hrzn = (Line) {p_hrzn_y, l_x_lower.dx, l_x_lower.dy};
 
         // Find mapped coordinates
@@ -70,7 +73,7 @@ Point map_point_to_screen_space(Point p, Screen s)
     else if (l_y_are_parallel)
     {
         // Find horizon
-        Point p_hrzn_x = find_intersection_of_lines(l_x_lower, l_x_upper);
+        Point p_hrzn_x = intersection_of_lines(l_x_lower, l_x_upper);
         Line l_hrzn = (Line) {p_hrzn_x, l_y_lower.dx, l_y_lower.dy};
 
         // Find mapped coordinates
@@ -81,8 +84,8 @@ Point map_point_to_screen_space(Point p, Screen s)
     else
     {
         // Find horizon
-        Point p_hrzn_x = find_intersection_of_lines(l_x_lower, l_x_upper);
-        Point p_hrzn_y = find_intersection_of_lines(l_y_lower, l_y_upper);
+        Point p_hrzn_x = intersection_of_lines(l_x_lower, l_x_upper);
+        Point p_hrzn_y = intersection_of_lines(l_y_lower, l_y_upper);
         Line l_hrzn = line_from_points(p_hrzn_x, p_hrzn_y);
 
         // Find mapped coordinates
@@ -93,30 +96,30 @@ Point map_point_to_screen_space(Point p, Screen s)
     return p_mapped;
 }
 
-// Helper for helper function map_point_coord_non_parallel().
-double non_parallel_helper(Line l1, Line l2)
-{
-    return (l1.dx * l2.dx + l1.dy * l2.dy) / (l1.dx * l2.dy - l1.dy * l2.dx);
-}
-
-// Helper for a point between non-parallel lines.
+// Helper for map_point_to_screen_space(). Finds a single coordinate for a point between all non-parallel lines.
 double map_point_coord_non_parallel_lines(Point p, Line l_lower, Line l_upper, Line l_hrzn)
 {
     // Find the intersection point on the horizon of the upper and lower lines
-    Point p_hrzn = find_intersection_of_lines(l_lower, l_upper);
+    Point p_hrzn = intersection_of_lines(l_lower, l_upper);
     if (!point_is_on_line(p_hrzn, l_hrzn, 0.000001))
         return NAN;
 
     // Get the line for the point
     Line l_p = line_from_points(p, p_hrzn);
 
-    // Use magic formula to calculate final interpolated value
+    // Use magic formula to calculate final mapped coordinate
     double k = 1 / (non_parallel_helper(l_upper, l_hrzn) - non_parallel_helper(l_lower, l_hrzn));
     double h = -non_parallel_helper(l_lower, l_hrzn) * k;
     return k * non_parallel_helper(l_p, l_hrzn) + h;
 }
 
-// Helper for a point between parallel lines, with non-parallel lines on other sides.
+// Helper for map_point_coord_non_parallel().
+double non_parallel_helper(Line l1, Line l2)
+{
+    return (l1.dx * l2.dx + l1.dy * l2.dy) / (l1.dx * l2.dy - l1.dy * l2.dx);
+}
+
+// Helper for map_point_to_screen_space(). Finds a single coordinate for a point between parallel and non-parallel lines.
 double map_point_coord_both_types_of_lines(Point p, Line l_lower, Line l_upper, Line l_hrzn)
 {
     // Get distances
@@ -124,13 +127,13 @@ double map_point_coord_both_types_of_lines(Point p, Line l_lower, Line l_upper, 
     double d_upper = distance_between_point_and_line(l_upper.p, l_hrzn);
     double d_point = distance_between_point_and_line(p, l_hrzn);
 
-    // Use magic formula to calculate final interpolated value
+    // Use magic formula to calculate final mapped coordinate
     double k = (d_upper * d_lower) / (d_upper - d_lower);
     double h = 1 / d_lower;
     return k * (-(1 / d_point) + h);
 }
 
-// Helper for a point between parallel lines.
+// Helper for map_point_to_screen_space(). Finds a single coordinate for a point between all parallel lines.
 double map_point_coord_parallel_lines(Point p, Line l_lower, Line l_upper)
 {
     // Make sure lines are parallel
@@ -141,11 +144,11 @@ double map_point_coord_parallel_lines(Point p, Line l_lower, Line l_upper)
     double d_lines = distance_between_point_and_line(l_upper.p, l_lower);
     double d_point_lower = distance_between_point_and_line(p, l_lower);
 
-    // Return percentage
+    // Return final mapped coordinate
     return d_point_lower / d_lines;
 }
 
-// Test the mapping for a specified number of (valid) random screens.
+// Test the screen mapping for a specified number of random screens.
 void test_screen_mapping(unsigned int num_screens)
 {
     srand(time(NULL));
@@ -166,7 +169,7 @@ void test_screen_mapping(unsigned int num_screens)
         while (!screen_is_valid(s));
 
         // Find the middle of the screen
-        Point p_mid = find_intersection_of_lines(line_from_points(s.p00, s.p11), line_from_points(s.p10, s.p01));
+        Point p_mid = intersection_of_lines(line_from_points(s.p00, s.p11), line_from_points(s.p10, s.p01));
 
         // Find the mapping of all the points
         Point p00_mapped = map_point_to_screen_space(s.p00, s);
@@ -181,6 +184,8 @@ void test_screen_mapping(unsigned int num_screens)
                             && points_are_equal(p01_mapped, (Point) {0.0, 1.0}, 0.000001)
                             && points_are_equal(p11_mapped, (Point) {1.0, 1.0}, 0.000001)
                             && points_are_equal(p_mid_mapped, (Point) {0.5, 0.5}, 0.000001);
+
+        // If the mapping didn't work as expected, display the results
         if (!test_succeeded)
         {
             printf("\nFAILED");

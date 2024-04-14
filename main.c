@@ -1,11 +1,12 @@
 #include <stdio.h>
 
-#include "double.h"
 #include "point.h"
-#include "line.h"
 #include "screen.h"
 
+// Prints three example screens and showcases their mappings.
 void print_example_screens();
+
+// Helper for print_example_screens().
 void print_screen_and_points(Screen s, Point ps[], int ps_size);
 
 int main()
@@ -14,6 +15,7 @@ int main()
     return 0;
 }
 
+// Prints three example screens and showcases their mappings.
 void print_example_screens()
 {
     const int PS_SIZE = 5;
@@ -48,6 +50,7 @@ void print_example_screens()
     print_screen_and_points(s, ps, PS_SIZE);
 }
 
+// Helper for print_example_screens().
 void print_screen_and_points(Screen s, Point ps[], int ps_size)
 {
     // Print screen
