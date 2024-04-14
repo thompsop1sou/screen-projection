@@ -149,8 +149,8 @@ double map_point_coord_parallel_lines(Point p, Line l_lower, Line l_upper)
 void test_screen_mapping(unsigned int num_screens)
 {
     srand(time(NULL));
-    double max = 10.0;
-    double min = -10.0;
+    double max = 100.0;
+    double min = -100.0;
 
     for (unsigned int i = 0; i < num_screens; i++)
     {
@@ -168,7 +168,7 @@ void test_screen_mapping(unsigned int num_screens)
         // Find the middle of the screen
         Point p_mid = find_intersection_of_lines(line_from_points(s.p00, s.p11), line_from_points(s.p10, s.p01));
 
-        // Find the mapping of all the points we can access
+        // Find the mapping of all the points
         Point p00_mapped = map_point_to_screen_space(s.p00, s);
         Point p10_mapped = map_point_to_screen_space(s.p10, s);
         Point p01_mapped = map_point_to_screen_space(s.p01, s);
